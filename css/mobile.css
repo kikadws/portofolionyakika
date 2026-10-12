@@ -1,0 +1,414 @@
+/* =====================================================================
+   KADWSS — MOBILE OVERHAUL
+   Muat SETELAH style.css:  <link rel="stylesheet" href="css/mobile.css">
+   Berlaku untuk layar ≤ 820px. Desktop tidak tersentuh.
+
+   Konsep
+   - Dock navigasi melayang di bawah (jangkauan jempol) menggantikan hamburger
+   - Top bar minimalis: logo + label, auto-hide saat scroll ke bawah
+   - Hero editorial: judul besar, potret berdampingan dengan teks
+   - Video full-bleed, galeri Graphic berbentuk mosaik 2 kolom
+   - Skill berbentuk chip, meta berbentuk grid 2 kolom
+===================================================================== */
+
+/* Elemen yang hanya ada di mobile — disembunyikan di desktop */
+.dock, .m-progress, .hero-title-outline{ display:none; }
+
+@media (max-width:820px){
+
+  /* ---------------------------------------------------------------
+     0. TOKENS & BASE
+  --------------------------------------------------------------- */
+  :root{
+    --gutter:clamp(18px, 5.2vw, 40px);
+    --nav-h:52px;
+    --dock-h:58px;
+    --dock-gap:14px;
+    --safe-b:env(safe-area-inset-bottom, 0px);
+    --safe-t:env(safe-area-inset-top, 0px);
+  }
+  html{
+    scroll-padding-top:calc(var(--nav-h) + var(--safe-t) + 8px);
+    -webkit-text-size-adjust:100%; text-size-adjust:100%;
+  }
+  body{ overflow-x:hidden; }
+  a, button{ -webkit-tap-highlight-color:transparent; touch-action:manipulation; }
+
+  .container{
+    padding-left:max(var(--gutter), env(safe-area-inset-left, 0px));
+    padding-right:max(var(--gutter), env(safe-area-inset-right, 0px));
+  }
+
+  .reveal{ transform:translateY(18px); transition-duration:.7s; }
+  .reveal.in{ transform:none; }
+
+  /* ---------------------------------------------------------------
+     1. TOP BAR  (drawer + hamburger digantikan dock)
+  --------------------------------------------------------------- */
+  .nav-toggle, .nav-scrim, .nav-links{ display:none !important; }
+
+  .nav{
+    padding:
+      calc(14px + var(--safe-t))
+      max(var(--gutter), env(safe-area-inset-right, 0px))
+      14px
+      max(var(--gutter), env(safe-area-inset-left, 0px));
+    transition:padding .4s var(--ease), transform .5s var(--ease);
+  }
+  .nav.scrolled{
+    padding-top:calc(10px + var(--safe-t));
+    padding-bottom:10px;
+    background:none; border-bottom-color:transparent;
+    -webkit-backdrop-filter:none; backdrop-filter:none;
+  }
+  .nav::before{                         /* latar blur ada di pseudo-element */
+    content:''; position:absolute; inset:0; z-index:-1;
+    background:rgba(246,246,243,.82);
+    -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--line);
+    opacity:0; transition:opacity .4s var(--ease);
+  }
+  .nav.scrolled::before{ opacity:1; }
+  .nav.is-hidden{ transform:translateY(-100%); }
+  .nav:has(:focus-visible){ transform:none; }
+
+  .nav-logo{ font-size:15px; }
+  .nav::after{
+    content:'PORTFOLIO 2026';
+    font-size:10.5px; font-weight:600; letter-spacing:.12em; color:var(--muted);
+    padding-left:16px;
+    background:radial-gradient(circle at 5px 50%, var(--accent) 0 3px, transparent 3.6px) no-repeat;
+  }
+
+  /* Progress baca (elemen dibuat oleh mobile.js) */
+  .m-progress{
+    display:block; position:fixed; top:0; left:0; right:0; height:2px; z-index:600;
+    background:var(--accent); transform-origin:left center;
+    transform:scaleX(var(--p, 0)); pointer-events:none;
+  }
+
+  /* ---------------------------------------------------------------
+     2. DOCK  (dibuat oleh mobile.js)
+  --------------------------------------------------------------- */
+  .dock{
+    display:flex; position:fixed; left:50%; z-index:520;
+    bottom:calc(var(--dock-gap) + var(--safe-b));
+    width:min(calc(100% - 28px), 400px); height:var(--dock-h);
+    padding:5px;
+    background:rgba(246,246,243,.78);
+    -webkit-backdrop-filter:blur(18px) saturate(1.3); backdrop-filter:blur(18px) saturate(1.3);
+    border:1px solid var(--line); border-radius:100px;
+    box-shadow:0 12px 32px rgba(18,18,20,.10), 0 1px 0 rgba(255,255,255,.6) inset;
+    transform:translateX(-50%);
+    transition:transform .5s var(--ease), opacity .4s var(--ease-soft);
+    animation:dockIn .8s var(--ease) 1.8s backwards;
+  }
+  @keyframes dockIn{ from{ opacity:0; transform:translateX(-50%) translateY(28px); } }
+
+  /* Sembunyikan dock saat video diputar → tampilan sinematik */
+  body:has(.player.playing) .dock{
+    transform:translateX(-50%) translateY(160%); opacity:0; pointer-events:none;
+  }
+
+  .dock a{
+    position:relative; z-index:1; flex:1;
+    display:flex; align-items:center; justify-content:center;
+    border-radius:100px;
+    font-size:12px; font-weight:600; letter-spacing:.04em;
+    color:var(--muted);
+    transition:color .35s var(--ease);
+  }
+  .dock a.active{ color:var(--bg); }
+  .dock a:active{ transform:scale(.96); }
+  .dock a:focus-visible{ outline:2px solid var(--accent); outline-offset:-3px; }
+
+  .dock-ind{
+    position:absolute; z-index:0; top:5px; bottom:5px; left:0;
+    width:var(--w, 0px); transform:translateX(var(--x, 0px));
+    border-radius:100px; background:var(--ink);
+    opacity:0;
+    transition:transform .55s var(--ease), width .55s var(--ease), opacity .3s var(--ease-soft);
+  }
+  .dock.has-active .dock-ind{ opacity:1; }
+
+  /* ---------------------------------------------------------------
+     3. HERO — potret besar di antara dua lapisan judul
+        lapisan (bawah → atas):
+          1  eyebrow + judul SOLID
+          2  potret (PNG transparan, memudar ke bawah)
+          3  salinan judul berupa OUTLINE putih  (dibuat oleh mobile.js)
+          4  deskripsi + meta  (di area potret yang sudah memudar, + halo)
+        Posisi dihitung dari proporsi portrait.png (3:4):
+          kepala mulai 11,4% · dagu ±31% · subjek 21%–84% lebar
+  --------------------------------------------------------------- */
+  .hero{
+    --pw:min(80vw, 470px);                     /* lebar potret */
+    --ph:calc(var(--pw) * 4 / 3);              /* tinggi potret (rasio 3:4) */
+    --fs:clamp(44px, 18.5vw, 112px);           /* ukuran judul */
+    min-height:100svh;
+    padding:
+      calc(var(--nav-h) + var(--safe-t) + 24px)
+      max(var(--gutter), env(safe-area-inset-right, 0px))
+      calc(var(--dock-h) + var(--dock-gap) + var(--safe-b) + 84px)
+      max(var(--gutter), env(safe-area-inset-left, 0px));
+  }
+
+  .hero-grid{
+    position:relative; z-index:1; isolation:isolate;
+    grid-template-columns:minmax(0, 1fr);
+    grid-template-areas:"eyebrow" "title" "sub" "meta";
+    row-gap:0; align-items:start;
+  }
+  .hero-grid > div:first-child{ display:contents; }   /* anak-anaknya jadi item grid */
+
+  /* eyebrow tepat di atas kepala; jarak ke judul = tinggi kepala (judul mulai di dagu) */
+  .hero-eyebrow{
+    grid-area:eyebrow; position:relative; z-index:1;
+    margin-bottom:calc(var(--ph) * .196 + 20px);
+  }
+
+  /* judul: lapisan solid (1) + lapisan outline (3) */
+  .hero-title{ grid-area:title; position:relative; z-index:1; }
+  .text-hero{ font-size:var(--fs); }
+  .hero-title-outline{
+    display:block; grid-area:title; position:relative; z-index:3;
+    pointer-events:none; user-select:none; -webkit-user-select:none;
+    -webkit-text-stroke:0.4px #fff;
+  }
+  .hero-title-outline, .hero-title-outline *{ color:transparent !important; }
+
+  /* potret (2): di tengah, kepala tepat di bawah eyebrow */
+  .hero-portrait{
+    position:absolute; z-index:2; order:0;
+    width:var(--pw); max-width:none; margin:0;
+    left:calc(50% - var(--pw) * .527);                 /* pusat subjek = pusat layar */
+    top:calc(32px - var(--ph) * .114);
+    pointer-events:none;
+  }
+  .hero-portrait-mask img{                              /* memudar sebelum deskripsi */
+    -webkit-mask-image:linear-gradient(180deg, #000 0%, #000 60%, rgba(0,0,0,.55) 85%, rgba(0,0,0,0) 98%);
+            mask-image:linear-gradient(180deg, #000 0%, #000 60%, rgba(0,0,0,.55) 85%, rgba(0,0,0,0) 98%);
+  }
+
+  /* deskripsi (4): mulai di zona potret yang hampir transparan + halo agar tetap terbaca */
+  .hero-sub{
+    grid-area:sub; position:relative; z-index:4; max-width:none;
+    margin-top:max(20px, calc(var(--ph) * .59 - 6px - var(--fs) * 2.07));
+    font-size:16.5px; line-height:1.55;
+    color:rgba(18,18,20,.76);
+    text-shadow:0 0 12px var(--bg), 0 0 4px var(--bg);
+  }
+  .hero-meta-row{
+    grid-area:meta; position:relative; z-index:4;
+    display:grid; grid-template-columns:1fr 1fr; gap:18px 20px;
+    margin-top:30px; padding-top:0; border-top:none;
+  }
+  .hero-meta-row div:first-child{ grid-column:auto; }
+  .hero-meta-row .val{ font-size:14px; }
+
+  .hs-grid{ display:none; }
+  .hs-path{ opacity:.6; }
+
+  /* Scroll cue — di atas dock */
+  .hero-scroll-cue{
+    bottom:calc(var(--dock-h) + var(--dock-gap) + var(--safe-b) + 26px);
+    left:max(var(--gutter), env(safe-area-inset-left, 0px));
+  }
+
+  /* ---------------------------------------------------------------
+     4. SECTION SCAFFOLD
+  --------------------------------------------------------------- */
+  section{ padding:80px 0; }
+  .section-head{
+    flex-direction:column; align-items:flex-start;
+    gap:18px; margin-bottom:44px;
+  }
+  .section-head .index,
+  .motion-statement .index,
+  .contact-title .index{ margin-bottom:14px; font-size:12px; letter-spacing:.06em; }
+  .text-section{ font-size:clamp(34px, 10.2vw, 84px); line-height:.95; }
+  .text-body-lg{ font-size:16px; line-height:1.6; }
+  .section-head > p.text-body-lg{ max-width:36ch !important; }
+
+  /* ---------------------------------------------------------------
+     5. SELECTED WORK — daftar yang nyaman disentuh
+  --------------------------------------------------------------- */
+  .work-row{ padding:0; }
+  .work-row-head{
+    grid-template-columns:28px minmax(0, 1fr) 28px;
+    grid-template-areas:
+      "num title plus"
+      ".   cat   plus";
+    gap:4px 12px; align-items:center;
+    padding:22px 0; min-height:64px;
+  }
+  .work-row-head .num{ grid-area:num; align-self:start; padding-top:5px; font-size:12px; }
+  .work-row-head .title{
+    grid-area:title; font-size:clamp(21px, 6.2vw, 32px); line-height:1.1;
+  }
+  .work-row-head .cat{
+    grid-area:cat; display:block; white-space:normal; font-size:12px; letter-spacing:.02em;
+  }
+  .work-row-head .yr{ display:none; }
+  .work-row-head .plus{ grid-area:plus; align-self:center; justify-self:end; }
+  .work-row-head:active .title{ color:var(--accent); }
+  /* style.css (pointer:coarse) memakai .plus::before sebagai area sentuh (inset:-12px) sehingga
+     garis horizontal "+" lepas. Seluruh baris sudah bisa ditekan, jadi kembalikan ke garis. */
+  .work-row-head .plus::before{
+    inset:auto; top:50%; left:0; width:100%; height:1px; transform:translateY(-50%);
+  }
+
+  .work-row.open .work-row-body{ max-height:1800px; padding-top:4px; padding-bottom:30px; }
+  .work-detail{ grid-template-columns:1fr; gap:22px; }
+  .work-detail .media-frame{ order:-1; }
+  .work-detail-info p{ max-width:none; font-size:15px; }
+
+  /* ---------------------------------------------------------------
+     6. MOTION — video full-bleed
+  --------------------------------------------------------------- */
+  .motion-statement{ margin-bottom:56px; }
+  .motion-statement .text-body-lg{ margin-top:18px !important; }
+  .motion-project{ margin-bottom:64px; }
+  .motion-project-head{
+    flex-direction:column; align-items:flex-start; gap:8px; margin-bottom:16px;
+  }
+  .motion-project-head .title{ font-size:clamp(28px, 8.4vw, 46px); line-height:1; }
+  .motion-project-head .tags{ gap:14px; }
+  .motion-project-head .tags span{ font-size:12px; }
+
+  .player{ margin-left:calc(var(--gutter) * -1); margin-right:calc(var(--gutter) * -1); }
+
+  .motion-project-meta{
+    display:grid; grid-template-columns:1fr 1fr; gap:18px 20px; margin-top:22px;
+  }
+  .motion-project-meta div{ max-width:none; }
+  .motion-project-meta div:first-child{ grid-column:1 / -1; }
+  .motion-disclaimer{ font-size:12px; margin-top:18px; }
+
+  /* ---------------------------------------------------------------
+     7. UI/UX — slider + meta
+  --------------------------------------------------------------- */
+  .uiux-controls{ margin-top:18px; }
+  .work-detail-meta, .work-detail-meta.wrap{
+    display:grid; grid-template-columns:1fr 1fr; gap:18px 20px;
+  }
+  #uiux .work-detail-meta{ margin-top:30px !important; }
+
+  /* ---------------------------------------------------------------
+     8. GRAPHIC — mosaik 2 kolom (3:4 ×3 + 1:1 ×1, rasio tidak diubah)
+        item-1 | item-2 (turun)   → baris 1
+        item-3 (persegi, penuh)   → baris 2
+        item-4 (kanan, 74%)       → baris 3
+  --------------------------------------------------------------- */
+  .gfx-grid{
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+    gap:10px; align-items:start;
+  }
+  .gfx-item.item-1, .gfx-item.item-2, .gfx-item.item-3, .gfx-item.item-4,
+  .gfx-item.a, .gfx-item.b, .gfx-item.c, .gfx-item.d{
+    grid-column:auto; grid-row:auto; align-self:start; justify-self:stretch; width:auto;
+  }
+  .gfx-item.item-2{ margin-top:36px; }
+  .gfx-item.item-3{ grid-column:1 / -1; }
+  .gfx-item.item-4{ grid-column:1 / -1; width:74%; justify-self:end; }
+
+  .gfx-item .gfx-num{ top:8px; left:8px; font-size:10px; padding:4px 9px; }
+  .gfx-item .gfx-label{
+    display:block; left:8px; bottom:8px; max-width:calc(100% - 16px);
+    font-size:10px; padding:5px 10px;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .gfx-item .gfx-label i{ display:inline-block; vertical-align:middle; margin-right:6px; }
+
+  .gfx-foot{ margin-top:36px; }
+  .gfx-foot-row{ flex-direction:column; align-items:flex-start; margin-top:24px; }
+
+  /* ---------------------------------------------------------------
+     9. ABOUT — fakta ringkas, skill berbentuk chip
+  --------------------------------------------------------------- */
+  .about-grid{ grid-template-columns:1fr; gap:40px; }
+  .about-copy p{ font-size:17px; max-width:none; margin-bottom:18px; }
+
+  .about-facts{
+    display:grid; grid-template-columns:1fr 1fr; gap:26px 20px;
+    padding-top:28px; border-top:1px solid var(--line);
+  }
+  .fact-block:nth-child(1){ order:1; }            /* Based In  */
+  .fact-block:nth-child(3){ order:2; }            /* Focus     */
+  .fact-block:nth-child(2){ order:3; grid-column:1 / -1; }   /* Education */
+  .fact-block:nth-child(4){ order:4; grid-column:1 / -1; }   /* Tools     */
+  .fact-block .val{ font-size:15px; }
+  .fact-block ul li{ font-size:15px; padding:2px 0; }
+
+  .skills-grid{
+    grid-template-columns:1fr; gap:28px; margin-top:56px; padding-top:36px;
+  }
+  .skills-col .lbl{ margin-bottom:14px; }
+  .skills-col ul{ display:flex; flex-wrap:wrap; gap:8px; }
+  .skills-col li, .skills-col li:last-child{
+    font-size:13.5px; font-weight:500; padding:8px 14px;
+    border:1px solid var(--line); border-radius:100px; background:var(--bg);
+  }
+
+  /* Experience */
+  #about [style*="margin-top:120px"]{ margin-top:64px !important; }
+  .exp-row{ grid-template-columns:1fr; gap:6px; padding:24px 0; }
+  .exp-year{ font-size:14px; color:var(--muted); }
+  .exp-title{ font-size:19px; }
+
+  /* ---------------------------------------------------------------
+     10. CONTACT & FOOTER
+  --------------------------------------------------------------- */
+  .contact-title{ margin-bottom:0; }
+  .magnetic-btn{
+    display:flex; width:100%; justify-content:space-between; align-items:center;
+    margin-top:36px; padding:22px 26px; min-height:64px;
+    font-size:15px;
+  }
+  .magnetic-btn:active{ background:var(--ink); color:var(--bg); }
+  .magnetic-btn:active .arrow{ transform:translate(3px, -3px); }
+
+  footer{
+    padding:48px 0 calc(var(--dock-h) + var(--dock-gap) + var(--safe-b) + 36px);
+  }
+  .foot-grid{ flex-direction:column; align-items:flex-start; gap:28px; }
+  .foot-brand{ font-size:19px; }
+  .foot-socials{ flex-wrap:wrap; gap:0 26px; }
+  .foot-socials a{ display:inline-flex; align-items:center; min-height:44px; font-size:14px; }
+  .foot-copy{ margin-top:24px; }
+}
+
+/* ---------------------------------------------------------------
+   Layar sangat kecil (≤ 360px)
+--------------------------------------------------------------- */
+@media (max-width:360px){
+  .hero-sub{ font-size:15px; }
+  .dock a{ font-size:11.5px; letter-spacing:.02em; }
+  .nav::after{ display:none; }
+}
+
+/* ---------------------------------------------------------------
+   HP landscape (tinggi sempit)
+--------------------------------------------------------------- */
+@media (max-width:820px) and (max-height:520px) and (orientation:landscape){
+  :root{ --dock-h:48px; --dock-gap:10px; }
+  .hero{ min-height:auto; padding-top:calc(var(--nav-h) + var(--safe-t) + 20px); padding-bottom:calc(var(--dock-h) + 40px); }
+  .hero-scroll-cue{ display:none; }
+  .hero{ --pw:min(46vh, 300px); --fs:clamp(34px, 13vh, 64px); }
+  .hero-eyebrow{ margin-bottom:12px; }
+  .hero-title{ max-width:62%; }
+  .hero-title-outline{ display:none; }                 /* teks dan potret tidak saling menimpa */
+  .hero-portrait{ top:auto; bottom:0; left:auto; right:0; }
+  .hero-sub{ margin-top:16px; max-width:58%; text-shadow:none; }
+  .hero-meta-row{ margin-top:22px; max-width:58%; }
+  .dock{ width:min(60%, 360px); }
+}
+
+/* ---------------------------------------------------------------
+   Reduced motion
+--------------------------------------------------------------- */
+@media (max-width:820px) and (prefers-reduced-motion: reduce){
+  .dock{ animation:none; transition:none; }
+  .dock-ind{ transition:none; }
+  .nav, .nav::before{ transition:none; }
+}

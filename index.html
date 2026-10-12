@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Kadwss — Motion & Graphic Designer</title>
+<meta name="description" content="Kika Dwi Saputra (Kadwss) — Multidisciplinary designer working across graphic design, UI/UX, and motion.">
+
+<!-- ===========================================================
+     FONTS — Manrope (display) + Inter (body / metadata)
+=========================================================== -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="css/style.css">
+<meta name="theme-color" content="#F6F6F3">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/mobile.css"> 
+</head>
+<body>
+
+<!-- Custom cursor -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-label" id="cursorLabel"></div>
+
+<!-- =========================================================
+     NAV
+========================================================= -->
+<nav class="nav" id="nav">
+  <a href="#top" class="nav-logo">KADWSS</a>
+
+  <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-controls="navLinks" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#work" data-nav="work" data-cursor="VIEW"><span class="nav-dot"></span>Work</a></li>
+    <li><a href="#motion" data-nav="motion" data-cursor="VIEW"><span class="nav-dot"></span>Motion</a></li>
+    <li><a href="#about" data-nav="about" data-cursor="VIEW"><span class="nav-dot"></span>About</a></li>
+    <li><a href="#contact" data-nav="contact" data-cursor="VIEW"><span class="nav-dot"></span>Contact</a></li>
+    <li class="nav-foot">
+      <a href="mailto:kikadws@gmail.com">kikadws@gmail.com</a>
+      <div class="nav-foot-socials">
+        <a href="https://www.instagram.com/kadwzz/" target="_blank" rel="noopener">Instagram</a>
+        <a href="https://www.behance.net/kikadwi" target="_blank" rel="noopener">Behance</a>
+        <a href="https://www.linkedin.com/in/kika-dwi-saputra-6239b8436" target="_blank" rel="noopener">LinkedIn</a>
+      </div>
+    </li>
+  </ul>
+</nav>
+<div class="nav-scrim" id="navScrim"></div>
+
+<!-- =========================================================
+     01 — HERO
+========================================================= -->
+<header class="hero" id="top">
+  <div class="hero-shapes" aria-hidden="true">
+    <svg class="hs-ring hs-ring--1" viewBox="0 0 200 200"><circle cx="100" cy="100" r="92" fill="none" stroke="rgba(51,70,232,0.18)" stroke-width="1"/></svg>
+    <svg class="hs-ring hs-ring--2" viewBox="0 0 200 200"><circle cx="100" cy="100" r="70" fill="none" stroke="var(--line)" stroke-width="1" stroke-dasharray="4 10"/></svg>
+    <svg class="hs-loop" viewBox="0 0 300 160"><path d="M10,80 C80,10 120,150 190,80 C230,30 260,120 290,80" fill="none" stroke="rgba(51,70,232,0.22)" stroke-width="1.5" stroke-dasharray="6 10"/></svg>
+    <svg class="hs-grid" viewBox="0 0 120 120">
+      <line x1="0" y1="30" x2="120" y2="30" stroke="var(--line)" stroke-width="1" stroke-dasharray="3 6"/>
+      <line x1="0" y1="90" x2="120" y2="90" stroke="var(--line)" stroke-width="1" stroke-dasharray="3 6"/>
+      <line x1="30" y1="0" x2="30" y2="120" stroke="var(--line)" stroke-width="1" stroke-dasharray="3 6"/>
+      <line x1="90" y1="0" x2="90" y2="120" stroke="var(--line)" stroke-width="1" stroke-dasharray="3 6"/>
+    </svg>
+    <svg class="hs-path" viewBox="0 0 400 400">
+      <path class="hs-path-line" d="M40,340 C140,320 160,120 260,90 S380,60 380,20" fill="none" stroke="rgba(51,70,232,0.25)" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="10 14"/>
+    </svg>
+  </div>
+
+  <div class="hero-grid">
+    <div>
+      <div class="hero-eyebrow eyebrow-wrap">
+        <span class="dot"></span>
+        <span class="text-meta">KADWSS — MOTION &amp; GRAPHIC DESIGNER</span>
+      </div>
+
+      <h1 class="hero-title display text-hero">
+        <span class="line"><span class="l1">DESIGN</span></span>
+        <span class="line"><span class="l2">IN</span></span>
+        <span class="line"><span class="l3"><em>MOTION.</em></span></span>
+      </h1>
+
+      <p class="hero-sub text-body-lg">
+        I create visual experiences across graphic design, digital interfaces, and motion.
+      </p>
+
+      <div class="hero-meta-row">
+        <div>
+          <span class="text-meta">FOCUS</span>
+          <span class="val">Graphic / UI-UX / Motion</span>
+        </div>
+        <div>
+          <span class="text-meta">BASED IN</span>
+          <span class="val">Tangerang, Indonesia</span>
+        </div>
+        <div>
+          <span class="text-meta">STATUS</span>
+          <span class="val">Open to work — 2026</span>
+        </div>
+      </div>
+    </div>
+
+     <div class="hero-portrait">
+      <div class="hero-portrait-mask">
+        <img src="assets/images/portrait.png" alt="Kika Dwi Saputra">
+      </div>
+    </div>
+  </div><!-- /hero-grid -->
+
+  <a href="#work" class="hero-scroll-cue" aria-label="Scroll to selected work">
+    <span class="bar" aria-hidden="true"></span>
+    <span class="text-meta">SCROLL</span>
+  </a>
+</header>
+
+<main>
+
+<!-- =========================================================
+     02 — SELECTED WORK
+========================================================= -->
+<section id="work">
+  <div class="container">
+    <div class="section-head reveal">
+      <div>
+        <div class="index text-meta">02 — INDEX</div>
+        <h2 class="display text-section">Selected<br>Work.</h2>
+      </div>
+      <p class="text-body-lg" style="max-width:32ch;">Seven projects across motion, interface, and graphic design — from personal explorations to internship work and an independent collaboration.</p>
+    </div>
+
+    <div class="work-list reveal" id="workList">
+      <!-- rows injected by JS from PROJECTS data -->
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     03 — MOTION
+========================================================= -->
+<section id="motion" style="background:var(--surface);">
+  <div class="container">
+    <div class="motion-statement reveal">
+      <div class="index text-meta">03 — MOTION</div>
+      <h2 class="display text-section">MOTION IS<br>NOT <span class="tag-blue">DECORATION.</span></h2>
+      <p class="text-body-lg" style="margin-top:24px;">Three motion projects exploring character, storytelling, branding, sound, and camera movement — from personal explorations to an independent AI branding collaboration.</p>
+    </div>
+
+    <div id="motionProjects"></div>
+  </div>
+</section>
+
+<!-- =========================================================
+     04 — UI/UX
+========================================================= -->
+<section id="uiux">
+  <div class="container">
+    <div class="section-head reveal">
+      <div>
+        <div class="index text-meta">04 — UI/UX</div>
+        <h2 class="display text-section">FROM IDEA<br>TO <span class="tag-blue">INTERFACE.</span></h2>
+      </div>
+      <p class="text-body-lg" style="max-width:32ch;">Redesigning a client's laundry service website during my internship — turning a cluttered layout into something modern and legible.</p>
+    </div>
+
+    <div class="uiux-gallery reveal" id="uiuxGallery"></div>
+
+    <div class="work-detail-meta" style="margin-top:40px;">
+      <div><span class="lbl">Project</span><span class="val">Laundry Website Redesign</span></div>
+      <div><span class="lbl">Role</span><span class="val">UI/UX Designer</span></div>
+      <div><span class="lbl">Tools</span><span class="val">Figma</span></div>
+      <div><span class="lbl">Year</span><span class="val">2025</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     05 — GRAPHIC DESIGN
+========================================================= -->
+<section id="graphic" style="background:var(--surface);">
+  <div class="container">
+    <div class="section-head reveal">
+      <div>
+        <div class="index text-meta">05 — GRAPHIC DESIGN</div>
+        <h2 class="display text-section">FORM. TYPE.<br><span class="tag-blue">IDENTITY.</span></h2>
+      </div>
+      <p class="text-body-lg" style="max-width:32ch;">Client and internship work spanning product, social, and promotional design.</p>
+    </div>
+
+    <div class="gfx-grid reveal" id="gfxGrid"></div>
+
+    <div class="gfx-foot reveal">
+      <div class="motion-line"></div>
+      <div class="gfx-foot-row">
+        <div class="work-detail-meta wrap">
+          <div><span class="lbl">Scope</span><span class="val">Branding · Social Media · Promo</span></div>
+          <div><span class="lbl">Role</span><span class="val">Graphic Designer</span></div>
+          <div><span class="lbl">Tools</span><span class="val">Figma</span></div>
+          <div><span class="lbl">Year</span><span class="val">2025</span></div>
+        </div>
+        <span class="text-meta gfx-note">04 SELECTED PIECES — CLIENT &amp; INTERNSHIP</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     06 — ABOUT
+========================================================= -->
+<section id="about">
+  <div class="container">
+    <div class="section-head reveal">
+      <div>
+        <div class="index text-meta">06 — ABOUT</div>
+        <h2 class="display text-section">A DESIGNER<br>BETWEEN <span class="tag-blue">STATIC</span><br>&amp; MOTION.</h2>
+      </div>
+    </div>
+
+    <div class="about-grid reveal">
+      <div class="about-copy">
+        <p>I'm an emerging multidisciplinary designer exploring the space between graphic design, digital interfaces, and motion.</p>
+        <p>I'm interested in how visual systems can communicate ideas — not only through composition, but through interaction, rhythm, and movement. I'm drawn to design because, to me, good visuals aren't just about aesthetics — they're about how something communicates a message.</p>
+      </div>
+
+      <div class="about-facts">
+        <div class="fact-block">
+          <div class="lbl">Based In</div>
+          <div class="val">Tangerang, Indonesia</div>
+        </div>
+        <div class="fact-block">
+          <div class="lbl">Education</div>
+          <div class="val">SMK Muhammadiyah Pakem<br>Software Engineering — 2023–2026</div>
+        </div>
+        <div class="fact-block">
+          <div class="lbl">Focus</div>
+          <ul>
+            <li>Graphic Design</li>
+            <li>UI/UX Design</li>
+            <li>Motion Graphics</li>
+          </ul>
+        </div>
+        <div class="fact-block">
+          <div class="lbl">Tools</div>
+          <div class="val">Figma · After Effects · Photoshop · Illustrator · Premiere Pro</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="skills-grid reveal">
+      <div class="skills-col">
+        <div class="lbl">Graphic Design</div>
+        <ul>
+          <li>Branding</li><li>Visual Identity</li><li>Typography</li><li>Social Media Design</li><li>Layout</li>
+        </ul>
+      </div>
+      <div class="skills-col">
+        <div class="lbl">UI / UX</div>
+        <ul>
+          <li>Interface Design</li><li>Visual Design</li><li>Wireframing</li><li>Prototyping</li>
+        </ul>
+      </div>
+      <div class="skills-col">
+        <div class="lbl">Motion</div>
+        <ul>
+          <li>Motion Graphics</li><li>Kinetic Typography</li><li>Camera Animation</li><li>Layer Animation</li><li>Manga-style Animation</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ===================== 07 — EXPERIENCE ===================== -->
+    <div style="margin-top:120px;" class="reveal">
+      <div class="index text-meta">07 — EXPERIENCE</div>
+      <div class="exp-row">
+        <div class="exp-year">2025</div>
+        <div>
+          <div class="exp-title">PKL / Internship</div>
+          <div class="exp-tag">Graphic &amp; Digital Design</div>
+          <ul class="exp-list">
+            <li>Promotional social media design</li>
+            <li>Website interface redesign</li>
+            <li>Client visual content</li>
+            <li>Product promotional graphics</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     08 — CONTACT
+========================================================= -->
+<section id="contact" style="background:var(--surface);">
+  <div class="container contact">
+    <div class="contact-title reveal">
+      <div class="index text-meta">08 — CONTACT</div>
+      <h2 class="display text-section">
+        <span>LET'S MAKE</span>
+        <span>SOMETHING <span class="tag-blue">MOVE.</span></span>
+      </h2>
+
+     <a href="https://mail.google.com/mail/?view=cm&fs=1&to=kikadws@gmail.com" target="_blank" rel="noopener noreferrer" class="magnetic-btn" id="magneticBtn" data-cursor="OPEN ↗">
+  LET'S TALK <span class="arrow">↗</span>
+</a>
+    </div>
+
+   
+  </div>
+</section>
+
+</main>
+
+<!-- =========================================================
+     09 — FOOTER
+========================================================= -->
+<footer>
+  <div class="container">
+    <div class="motion-line" style="margin-bottom:48px;"></div>
+    <div class="foot-grid">
+      <div>
+        <div class="foot-brand">Kika Dwi Saputra</div>
+        <div class="foot-sub">Motion &amp; Graphic Designer — Graphic / UI-UX / Motion</div>
+        <div class="foot-sub">Tangerang, Indonesia</div>
+      </div>
+      <div class="foot-socials">
+        <a href="https://www.instagram.com/kadwzz/" target="_blank" rel="noopener" data-cursor="OPEN ↗">Instagram</a>
+        <a href="https://www.behance.net/kikadwi" target="_blank" rel="noopener" data-cursor="OPEN ↗">Behance</a>
+        <a href="https://www.linkedin.com/in/kika-dwi-saputra-6239b8436" target="_blank" rel="noopener" data-cursor="OPEN ↗">LinkedIn</a>
+      </div>
+    </div>
+    <div class="foot-copy">© 2026 Kika Dwi Saputra</div>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+<script src="js/main.js"></script>
+<script src="js/mobile.js"></script>  
+</body>
+</html>
