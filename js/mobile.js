@@ -82,33 +82,32 @@
     watched.forEach(s => io.observe(s));
   }
 
-  /* ---------- Scroll: progress + auto-hide top bar ---------- */
-  let lastY = window.scrollY, ticking = false;
+  /* ---------- Scroll: progress baca ----------
+     (auto-hide top bar sudah ditangani main.js — tidak diduplikasi di sini.
+      Tinggi dokumen di-cache supaya tidak memaksa layout di setiap frame scroll.) */
+  let ticking = false, maxScroll = 0;
+  const measure = () => { maxScroll = document.documentElement.scrollHeight - window.innerHeight; };
 
   function onScroll() {
     ticking = false;
-    const y   = Math.max(0, window.scrollY);
-    const max = document.documentElement.scrollHeight - window.innerHeight;
-    bar.style.setProperty('--p', max > 0 ? Math.min(1, y / max).toFixed(4) : 0);
-
-    if (nav && mq.matches) {
-      const dy = y - lastY;
-      if (y < 120 || dy < -6) nav.classList.remove('is-hidden');   // dekat atas / scroll ke atas
-      else if (dy > 8)        nav.classList.add('is-hidden');      // scroll ke bawah
-    }
-    lastY = y;
+    const y = Math.max(0, window.scrollY);
+    bar.style.setProperty('--p', maxScroll > 0 ? Math.min(1, y / maxScroll).toFixed(3) : 0);
   }
   window.addEventListener('scroll', () => {
     if (!ticking) { ticking = true; requestAnimationFrame(onScroll); }
   }, { passive: true });
+  window.addEventListener('resize', () => { measure(); onScroll(); });
+  window.addEventListener('load', () => { measure(); onScroll(); });
+  if ('ResizeObserver' in window) new ResizeObserver(() => { measure(); onScroll(); }).observe(document.body);
 
   /* ---------- Sinkronisasi saat ukuran berubah ---------- */
-  window.addEventListener('resize', moveIndicator);
+  window.addEventListener('resize', moveIndicator, { passive: true });
   window.addEventListener('orientationchange', () => setTimeout(moveIndicator, 250));
   mq.addEventListener ? mq.addEventListener('change', () => { nav && nav.classList.remove('is-hidden'); moveIndicator(); })
                       : mq.addListener(() => { nav && nav.classList.remove('is-hidden'); moveIndicator(); });
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(moveIndicator);
 
+  measure();
   onScroll();
   moveIndicator();
 })();

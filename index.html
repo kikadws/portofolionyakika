@@ -11,12 +11,13 @@
 =========================================================== -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300..800&family=Inter:wght@400..600&display=swap" rel="stylesheet">
 
-<link rel="stylesheet" href="css/style.css">
 <meta name="theme-color" content="#F6F6F3">
+<link rel="preload" as="image" href="assets/images/portrait.webp" fetchpriority="high">
 <link rel="stylesheet" href="css/style.css">
-<link rel="stylesheet" href="css/mobile.css"> 
+<link rel="stylesheet" href="css/mobile.css">
+<link rel="stylesheet" href="css/motion.css">
 </head>
 <body>
 
@@ -105,7 +106,7 @@
 
      <div class="hero-portrait">
       <div class="hero-portrait-mask">
-        <img src="assets/images/portrait.png" alt="Kika Dwi Saputra">
+        <img src="assets/images/portrait.webp" alt="Kika Dwi Saputra" width="900" height="1200" fetchpriority="high" decoding="async">
       </div>
     </div>
   </div><!-- /hero-grid -->
@@ -142,13 +143,26 @@
 ========================================================= -->
 <section id="motion" style="background:var(--surface);">
   <div class="container">
-    <div class="motion-statement reveal">
-      <div class="index text-meta">03 — MOTION</div>
-      <h2 class="display text-section">MOTION IS<br>NOT <span class="tag-blue">DECORATION.</span></h2>
-      <p class="text-body-lg" style="margin-top:24px;">Three motion projects exploring character, storytelling, branding, sound, and camera movement — from personal explorations to an independent AI branding collaboration.</p>
-    </div>
 
-    <div id="motionProjects"></div>
+    <header class="mo-head reveal">
+      <div class="mo-head-title">
+        <div class="index text-meta">03 — MOTION</div>
+        <h2 class="display text-section">MOTION IS<br>NOT <span class="tag-blue">DECORATION.</span></h2>
+      </div>
+      <div class="mo-head-side">
+        <p class="text-body-lg">Three motion projects exploring character, storytelling, branding, sound, and camera movement — from personal explorations to an independent AI branding collaboration.</p>
+        <dl class="mo-facts">
+          <div><dt>Projects</dt><dd>03</dd></div>
+          <div><dt>Focus</dt><dd>Character · Story · Branding</dd></div>
+          <div><dt>Tool</dt><dd>After Effects</dd></div>
+        </dl>
+      </div>
+    </header>
+
+    <!-- diisi otomatis oleh JS dari data PROJECTS -->
+    <nav class="mo-index reveal" id="motionIndex" aria-label="Motion projects"></nav>
+    <div class="mo-list" id="motionProjects"></div>
+
   </div>
 </section>
 
@@ -334,8 +348,7 @@
   </div>
 </footer>
 
-<script src="js/main.js"></script>
-<script src="js/main.js"></script>
-<script src="js/mobile.js"></script>  
+<script src="js/main.js" defer></script>
+<script src="js/mobile.js" defer></script>
 </body>
 </html>

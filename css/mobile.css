@@ -59,12 +59,10 @@
     padding-top:calc(10px + var(--safe-t));
     padding-bottom:10px;
     background:none; border-bottom-color:transparent;
-    -webkit-backdrop-filter:none; backdrop-filter:none;
   }
   .nav::before{                         /* latar blur ada di pseudo-element */
     content:''; position:absolute; inset:0; z-index:-1;
-    background:rgba(246,246,243,.82);
-    -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px);
+    background:rgba(246,246,243,.95);
     border-bottom:1px solid var(--line);
     opacity:0; transition:opacity .4s var(--ease);
   }
@@ -95,8 +93,7 @@
     bottom:calc(var(--dock-gap) + var(--safe-b));
     width:min(calc(100% - 28px), 400px); height:var(--dock-h);
     padding:5px;
-    background:rgba(246,246,243,.78);
-    -webkit-backdrop-filter:blur(18px) saturate(1.3); backdrop-filter:blur(18px) saturate(1.3);
+    background:rgba(246,246,243,.94);
     border:1px solid var(--line); border-radius:100px;
     box-shadow:0 12px 32px rgba(18,18,20,.10), 0 1px 0 rgba(255,255,255,.6) inset;
     transform:translateX(-50%);
@@ -106,7 +103,7 @@
   @keyframes dockIn{ from{ opacity:0; transform:translateX(-50%) translateY(28px); } }
 
   /* Sembunyikan dock saat video diputar → tampilan sinematik */
-  body:has(.player.playing) .dock{
+  body.is-playing .dock{
     transform:translateX(-50%) translateY(160%); opacity:0; pointer-events:none;
   }
 
@@ -173,7 +170,7 @@
   .hero-title-outline{
     display:block; grid-area:title; position:relative; z-index:3;
     pointer-events:none; user-select:none; -webkit-user-select:none;
-    -webkit-text-stroke:0.4px #fff;
+    -webkit-text-stroke:0.6px #fff;
   }
   .hero-title-outline, .hero-title-outline *{ color:transparent !important; }
 
@@ -208,6 +205,7 @@
 
   .hs-grid{ display:none; }
   .hs-path{ opacity:.6; }
+  .hs-path-line, .hs-loop{ animation:none; }          /* hemat baterai di HP */
 
   /* Scroll cue — di atas dock */
   .hero-scroll-cue{

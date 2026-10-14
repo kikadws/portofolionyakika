@@ -116,17 +116,22 @@ h1,h2,h3{ font-family:var(--display); letter-spacing:-0.02em; }
 }
 .motion-line::after{
   content:'';
-  position:absolute; top:0; left:-30%;
+  position:absolute; top:0; left:0;
   width:30%; height:100%;
   background:var(--accent);
+  transform:translateX(-100%);
   animation:travel 3.2s var(--ease) infinite;
+  will-change:transform;
 }
 @keyframes travel{
-  0%{ left:-30%; }
-  60%{ left:100%; }
-  100%{ left:100%; }
+  0%{ transform:translateX(-100%); }
+  60%{ transform:translateX(334%); }
+  100%{ transform:translateX(334%); }
 }
-@media (prefers-reduced-motion: reduce){ .motion-line::after{ animation:none; left:0; width:8%; } }
+@media (prefers-reduced-motion: reduce){ .motion-line::after{ animation:none; transform:none; width:8%; } }
+
+/* Animasi tak berujung dijeda saat elemennya di luar layar (diatur oleh main.js) */
+.anim-off, .anim-off *, .anim-off::after, .anim-off *::after{ animation-play-state:paused !important; }
 
 /* =================================================================
    3. NAVIGATION
@@ -145,8 +150,7 @@ h1,h2,h3{ font-family:var(--display); letter-spacing:-0.02em; }
    bagi drawer (position:fixed) di dalamnya */
 .nav::before{
   content:''; position:absolute; inset:0; z-index:-1;
-  background:rgba(246,246,243,.82);
-  -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px);
+  background:rgba(246,246,243,.94);
   border-bottom:1px solid var(--line);
   opacity:0; transition:opacity .5s var(--ease);
 }
@@ -435,6 +439,7 @@ html.nav-lock{ overscroll-behavior:none; }
 }
 .hero-scroll-cue:hover{ color:var(--ink); }
 .hero-scroll-cue.is-hidden{ opacity:0; transform:translateY(8px); pointer-events:none; }
+.hero-scroll-cue.is-hidden .bar::after{ animation-play-state:paused; }
 .hero-scroll-cue .text-meta{ color:inherit; letter-spacing:0.14em; }
 .hero-scroll-cue .bar{
   width:1px; height:36px; flex-shrink:0;
@@ -627,9 +632,8 @@ section{ position:relative; padding:160px 0; }
   position:absolute; top:50%; left:50%; z-index:3;
   width:84px; height:84px; margin:-42px 0 0 -42px; border-radius:50%;
   display:flex; align-items:center; justify-content:center;
-  color:#fff; background:rgba(15,15,16,.55);
+  color:#fff; background:rgba(15,15,16,.7);
   border:1px solid rgba(255,255,255,.35);
-  backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
   opacity:0; pointer-events:none; transform:scale(.9);
   transition:opacity .35s var(--ease), transform .5s var(--ease), background .3s var(--ease);
 }
@@ -749,13 +753,6 @@ section{ position:relative; padding:160px 0; }
   .player-controls, .player-big, .player-progress-buffer{ transition:none; }
   .player.is-loading .player-spinner{ animation-duration:1.6s; }
 }
-.player-btn{ color:#fff; width:20px; height:20px; flex-shrink:0; }
-.player-progress{ flex:1; height:2px; background:rgba(255,255,255,.25); position:relative; border-radius:2px; overflow:hidden; }
-.player-progress-fill{ position:absolute; left:0; top:0; height:100%; width:38%; background:var(--accent); }
-.player.playing .player-progress-fill{ animation:playfill 12s linear forwards; }
-@keyframes playfill{ from{ width:38%; } to{ width:100%; } }
-.player-time{ color:rgba(255,255,255,.7); font-size:11px; font-variant-numeric:tabular-nums; }
-
 .motion-project-meta{
   display:flex; gap:48px; margin-top:28px; flex-wrap:wrap;
   opacity:0; transform:translateY(16px); transition:opacity .8s var(--ease) .1s, transform .8s var(--ease) .1s;
@@ -1149,3 +1146,13 @@ footer{ padding-bottom:calc(40px + env(safe-area-inset-bottom, 0px)); }
   .hero{ min-height:auto; padding-top:calc(84px + env(safe-area-inset-top, 0px)); padding-bottom:56px; }
   .hero-scroll-cue{ display:none; }
 }
+
+/* =================================================================
+   PERFORMA — lewati render section yang jauh di bawah layar
+   (Motion tidak dimasukkan karena memuat player sticky)
+================================================================= */
+#uiux, #graphic, #about, #contact, footer{
+  content-visibility:auto;
+  contain-intrinsic-size:auto 900px;
+}
+.gfx-item img, .uiux-slide img{ background:var(--surface); }

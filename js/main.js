@@ -3,7 +3,7 @@
    Nothing else in the code needs to change.
 ================================================================= */
 const ASSETS = {
-  portrait: "assets/images/portrait.png"
+  portrait: "assets/images/portrait.webp"
 };
 
 /* =================================================================
@@ -12,7 +12,7 @@ const ASSETS = {
 const PROJECTS = [
   {
     number: "01", id:"reze-mograph", title:"Reze MoGraph", category:"Motion Graphics", year:"2026",
-    type:"video", media:"assets/videos/reze-mograph.mp4", poster:"assets/images/reze-poster.png",
+    type:"video", media:"assets/videos/reze-mograph.webm", poster:"assets/images/reze-poster.webp",
     role:"Motion Designer — responsible for the entire motion design process, including dynamic movement and camera animation.",
     tools:"After Effects",
     description:"A personal motion project combining a visual story, music, and character-driven editing. The project explores the relationship between story and mood through movement and camera work — including a first attempt at 3D camera layers in After Effects.",
@@ -20,7 +20,7 @@ const PROJECTS = [
   },
   {
     number: "02", id:"malam-minggu", title:"Malam Minggu", category:"Motion Graphics", year:"2026",
-    type:"video", media:"assets/videos/malam-minggu.mp4", poster:"assets/images/malam-minggu-poster.png",
+    type:"video", media:"assets/videos/malam-minggu.webm", poster:"assets/images/malam-minggu-poster.webp",
     role:"Motion Designer — camera movement, layer separation and animation, scene compositing, from Photoshop-separated character artwork.",
     tools:"After Effects, Photoshop",
     description:"A second motion exploration combining character storytelling and manga-inspired animation, connecting layered character artwork, manga panels, camera movement, and scene transitions.",
@@ -28,7 +28,7 @@ const PROJECTS = [
   },
   {
     number: "03", id:"laundry-web", title:"Laundry Website Redesign", category:"UI/UX", year:"2025",
-    type:"image", media:"assets/images/laundry.png",
+    type:"image", media:"assets/images/laundry.webp",
     role:"UI/UX Designer — redesigned the overall website interface with a more modern visual direction.",
     tools:"Figma",
     description:"An internship (PKL) project redesigning a client's laundry service website into a more modern and visually organized digital experience.",
@@ -36,7 +36,7 @@ const PROJECTS = [
   },
   {
     number: "04", id:"food-redesign", title:"Food Product Redesign", category:"Graphic Design / Branding", year:"2025",
-    type:"image", media:"assets/images/food-redesign.png",
+    type:"image", media:"assets/images/food-redesign.webp",
     role:"Redesigned promotional visuals and improved the overall visual presentation.",
     tools:"Figma",
     description:"A client project redesigning existing food & beverage promotional content into a cleaner, more contemporary visual presentation.",
@@ -44,7 +44,7 @@ const PROJECTS = [
   },
   {
     number: "05", id:"uniform-social", title:"Uniform Product Social Content", category:"Graphic Design / Branding", year:"2025",
-    type:"image", media:"assets/images/uniform-social.png",
+    type:"image", media:"assets/images/uniform-social.webp",
     role:"Designed and produced promotional Instagram content.",
     tools:"Figma",
     description:"Internship (PKL) project designing promotional Instagram content for a client's custom uniform/sewing products, restructured into a cleaner social-media format.",
@@ -52,7 +52,7 @@ const PROJECTS = [
   },
   {
     number: "06", id:"service-listing", title:"Service Marketplace Listing", category:"Graphic Design / Branding", year:"2025",
-    type:"image", media:"assets/images/service-listing.png",
+    type:"image", media:"assets/images/service-listing.webp",
     role:"Visual design and layout of the promotional listing.",
     tools:"Figma",
     description:"Internship (PKL) project creating promotional visual content for a website-development service, for Facebook Marketplace/listing content.",
@@ -60,7 +60,7 @@ const PROJECTS = [
   },
   {
     number: "07", id:"eaide-branding", title:"Eaide Branding", category:"Motion Branding / Branding", year:"2026",
-    type:"video", media:"assets/videos/eaide-branding.mp4", poster:"assets/images/eaide-branding-poster.png",
+    type:"video", media:"assets/videos/eaide-branding.webm", poster:"assets/images/eaide-branding-poster.webp",
     role:"Motion Designer",
     tools:"After Effects",
     collaboration:"Independent Collaboration",
@@ -105,8 +105,8 @@ PROJECTS.forEach(p => {
         </div>
         <div class="media-frame">
           ${p.type === 'video'
-            ? `<video src="${p.media}" poster="${p.poster}" controls${isCase ? ' preload="none" playsinline' : ''} style="width:100%; height:100%; object-fit:cover;"></video>`
-            : `<img src="${p.media}" alt="${p.title}" style="width:100%; height:100%; object-fit:cover;">`}
+            ? `<video src="${p.media}" poster="${p.poster}" controls preload="none" playsinline style="width:100%; height:100%; object-fit:cover;"></video>`
+            : `<img src="${p.media}" alt="${p.title}" loading="lazy" decoding="async" style="width:100%; height:100%; object-fit:cover;">`}
         </div>
       </div>
     </div>
@@ -246,22 +246,32 @@ function initMotionPlayer(playerEl) {
   video.addEventListener('play', () => {
     MOTION_VIDEOS.forEach(v => { if (v !== video && !v.paused) v.pause(); });
     playerEl.classList.add('playing');
+    document.body.classList.add('is-playing');
     playBtn.setAttribute('aria-label', 'Pause');
     cancelAnimationFrame(raf); loop();
     showUI(); syncCursorLabel();
   });
   video.addEventListener('pause', () => {
     playerEl.classList.remove('playing');
+    document.body.classList.toggle('is-playing', !!document.querySelector('.player.playing'));
     playBtn.setAttribute('aria-label', 'Play');
     cancelAnimationFrame(raf); updateProgress(); updateAria();
     clearTimeout(hideTimer); syncCursorLabel();
   });
   video.addEventListener('ended', () => {
     playerEl.classList.remove('playing');
+    document.body.classList.toggle('is-playing', !!document.querySelector('.player.playing'));
     playBtn.setAttribute('aria-label', 'Replay');
     updateProgress(); syncCursorLabel();
   });
-  video.addEventListener('timeupdate', () => { updateProgress(); updateAria(); updateBuffered(); });
+  let lastAria = 0;
+  video.addEventListener('timeupdate', () => {
+    const now = performance.now();
+    if (now - lastAria < 500) return;            // aria & buffer cukup ~2x per detik
+    lastAria = now;
+    if (video.paused) updateProgress();
+    updateAria(); updateBuffered();
+  });
   video.addEventListener('progress', updateBuffered);
   ['loadedmetadata', 'durationchange'].forEach(ev => video.addEventListener(ev, () => {
     durEl.textContent = fmtTime(video.duration);
@@ -344,51 +354,111 @@ function initMotionPlayer(playerEl) {
   new IntersectionObserver(([entry]) => {
     if (!entry.isIntersecting && !video.paused && !fsElement()) video.pause();
   }, { threshold: 0.2 }).observe(playerEl);
+
+  /* ---------- muat metadata (durasi) hanya saat player mendekati layar ---------- */
+  const metaIO = new IntersectionObserver(([entry]) => {
+    if (!entry.isIntersecting) return;
+    if (video.preload === 'none') video.preload = 'metadata';
+    metaIO.disconnect();
+  }, { rootMargin: '300px 0px' });
+  metaIO.observe(playerEl);
 }
 
-PROJECTS.filter(p => p.type === 'video').forEach(p => {
-  const block = document.createElement('div');
-  block.className = 'motion-project';
+const motionVideos  = PROJECTS.filter(p => p.type === 'video');
+const motionIndexEl = document.getElementById('motionIndex');
+const pad2 = n => String(n).padStart(2, '0');
+const esc  = s => String(s).replace(/[&<>"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]));
+ 
+/* ---------- Indeks proyek ---------- */
+if (motionIndexEl) {
+  motionIndexEl.innerHTML = motionVideos.map((p, i) => `
+    <a href="#motion-${p.id}" data-mo="${p.id}">
+      <span class="no">${pad2(i + 1)}</span>
+      <span class="t">${esc(p.title)}</span>
+      <span class="y">${esc(p.year)}</span>
+      <span class="ar" aria-hidden="true">↓</span>
+    </a>`).join('');
+}
+ 
+/* ---------- Proyek ---------- */
+motionVideos.forEach((p, i) => {
+  const [roleName, ...roleRest] = p.role.split(' — ');
+  const specs = [
+    ['Role', `<strong>${esc(roleName)}</strong>${roleRest.length ? `<span>${esc(roleRest.join(' — ').replace(/^./, c => c.toUpperCase()))}</span>` : ''}`],
+    ['Tools', esc(p.tools)],
+    p.collaboration && ['Type',  esc(p.collaboration)],
+    p.focus         && ['Focus', esc(p.focus)],
+    p.sound         && ['Sound', esc(p.sound)]
+  ].filter(Boolean);
+ 
+  const block = document.createElement('article');
+  block.className = 'mo-project reveal';
+  block.id = `motion-${p.id}`;
+  block.dataset.mo = p.id;
   block.innerHTML = `
-    <div class="motion-project-head">
-      <div class="title display">${p.title}</div>
-      <div class="tags"><span>${p.category}</span><span>${p.year}</span></div>
-    </div>
-    <div class="player" data-cursor="PLAY" tabindex="0" role="group" aria-label="${p.title} — video player">
-      <video class="video-element" src="${p.media}" poster="${p.poster}" preload="metadata" playsinline></video>
-
-      <button type="button" class="player-big" data-big aria-label="Play video">
-        <svg viewBox="0 0 20 20" fill="currentColor" width="30" height="30"><path d="M6 4l10 6-10 6V4z"/></svg>
-      </button>
-      <div class="player-spinner" aria-hidden="true"></div>
-      <div class="player-error" hidden>Video unavailable</div>
-
-      <div class="player-controls">
-        <button type="button" class="player-btn" data-play aria-label="Play">${ICON.play}${ICON.pause}</button>
-        <span class="player-time" data-cur>00:00</span>
-        <div class="player-progress" role="slider" tabindex="0" aria-label="Seek"
-             aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-          <div class="player-progress-track">
-            <div class="player-progress-buffer"></div>
-            <div class="player-progress-fill"></div>
+    <header class="mo-rail">
+      <span class="mo-no">${pad2(i + 1)}<i>/ ${pad2(motionVideos.length)}</i></span>
+      <span class="mo-line" aria-hidden="true"></span>
+      <span class="mo-cat">${esc(p.category)}</span>
+      <span class="mo-year">${esc(p.year)}</span>
+    </header>
+ 
+    <div class="mo-body">
+      <div class="mo-stage">
+        <div class="player" data-cursor="PLAY" tabindex="0" role="group" aria-label="${esc(p.title)} — video player">
+          <video class="video-element" src="${p.media}" poster="${p.poster}" preload="none" playsinline></video>
+ 
+          <button type="button" class="player-big" data-big aria-label="Play video">
+            <svg viewBox="0 0 20 20" fill="currentColor" width="30" height="30"><path d="M6 4l10 6-10 6V4z"/></svg>
+          </button>
+          <div class="player-spinner" aria-hidden="true"></div>
+          <div class="player-error" hidden>Video unavailable</div>
+ 
+          <div class="player-controls">
+            <button type="button" class="player-btn" data-play aria-label="Play">${ICON.play}${ICON.pause}</button>
+            <span class="player-time" data-cur>00:00</span>
+            <div class="player-progress" role="slider" tabindex="0" aria-label="Seek"
+                 aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+              <div class="player-progress-track">
+                <div class="player-progress-buffer"></div>
+                <div class="player-progress-fill"></div>
+              </div>
+            </div>
+            <span class="player-time player-dur" data-dur>00:00</span>
+            <button type="button" class="player-btn" data-mute aria-label="Mute" aria-pressed="false">${ICON.vol}${ICON.muted}</button>
+            <button type="button" class="player-btn" data-full aria-label="Fullscreen">${ICON.enter}${ICON.exit}</button>
           </div>
         </div>
-        <span class="player-time player-dur" data-dur>00:00</span>
-        <button type="button" class="player-btn" data-mute aria-label="Mute" aria-pressed="false">${ICON.vol}${ICON.muted}</button>
-        <button type="button" class="player-btn" data-full aria-label="Fullscreen">${ICON.enter}${ICON.exit}</button>
+      </div>
+ 
+      <div class="mo-info">
+        <h3 class="mo-title">${esc(p.title)}</h3>
+        <p class="mo-desc">${esc(p.description)}</p>
+        <dl class="mo-specs">
+          ${specs.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('')}
+        </dl>
+        ${p.disclaimer ? `<p class="mo-note"><b>Note</b>${esc(p.disclaimer)}</p>` : ''}
       </div>
     </div>
-    <div class="motion-project-meta">
-      <div><span class="lbl">Role</span><span class="val">${p.role}</span></div>
-      <div><span class="lbl">Tools</span><span class="val">${p.tools}</span></div>
-      ${p.collaboration ? `<div><span class="lbl">Type</span><span class="val">${p.collaboration}</span></div>` : ''}
-      ${p.sound ? `<div><span class="lbl">Sound</span><span class="val">${p.sound}</span></div>` : ''}
-    </div>
-    ${p.disclaimer ? `<p class="motion-disclaimer">${p.disclaimer}</p>` : ''}
   `;
   motionWrap.appendChild(block);
   initMotionPlayer(block.querySelector('.player'));
 });
+ 
+/* ---------- Tandai proyek yang sedang dilihat pada indeks ---------- */
+(function () {
+  const blocks = document.querySelectorAll('.mo-project');
+  if (!motionIndexEl || !blocks.length || !('IntersectionObserver' in window)) return;
+  const links = motionIndexEl.querySelectorAll('a');
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      links.forEach(a => a.classList.toggle('is-current', a.dataset.mo === e.target.dataset.mo));
+    });
+  }, { rootMargin: '-40% 0px -55% 0px' });
+  blocks.forEach(b => io.observe(b));
+})();
+ 
 
 
 /* =================================================================
@@ -396,16 +466,16 @@ PROJECTS.filter(p => p.type === 'video').forEach(p => {
 ================================================================= */
 const uiuxGallery = document.getElementById('uiuxGallery');
 const uiuxData = [
-  { img: "assets/images/laundry-01.png", title: "Laundry Dashboard" },
-  { img: "assets/images/laundry-02.png", title: "Laundry Flow" },
-  { img: "assets/images/laundry-03.png", title: "Laundry Mobile View" }
+  { img: "assets/images/laundry-01.webp", title: "Laundry Dashboard" },
+  { img: "assets/images/laundry-02.webp", title: "Laundry Flow" },
+  { img: "assets/images/laundry-03.webp", title: "Laundry Mobile View" }
 ];
 
-uiuxData.forEach(item => {
+uiuxData.forEach((item, idx) => {
   const slide = document.createElement('div');
   slide.className = 'uiux-slide';
   slide.dataset.cursor = 'DRAG';
-  slide.innerHTML = `<img src="${item.img}" alt="${item.title}" draggable="false"
+  slide.innerHTML = `<img src="${item.img}" alt="${item.title}" draggable="false" decoding="async"${idx === 0 ? '' : ' loading="lazy"'}
     style="width:100%; height:100%; object-fit:cover; position:relative; z-index:2;">`;
   uiuxGallery.appendChild(slide);
 });
@@ -467,10 +537,10 @@ uiuxData.forEach(item => {
   };
 
   /* --- UI state --- */
-  let ticking = false;
+  let ticking = false, needsRecompute = true;
   const update = () => {
     ticking = false;
-    computePositions();
+    if (needsRecompute) { computePositions(); needsRecompute = false; }
     const max = maxScroll();
     controls.hidden = max <= 4;
     const idx = currentIndex();
@@ -482,20 +552,19 @@ uiuxData.forEach(item => {
   };
   const requestUpdate = () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } };
 
+  const requestRecompute = () => { needsRecompute = true; requestUpdate(); };
   gallery.addEventListener('scroll', requestUpdate, { passive: true });
-  window.addEventListener('resize', requestUpdate);
-  if ('ResizeObserver' in window) new ResizeObserver(requestUpdate).observe(gallery);
-  window.addEventListener('load', requestUpdate);
+  window.addEventListener('resize', requestRecompute);
+  if ('ResizeObserver' in window) new ResizeObserver(requestRecompute).observe(gallery);
+  window.addEventListener('load', requestRecompute);
 
   /* --- tombol & keyboard --- */
   controls.addEventListener('click', e => {
     const btn = e.target.closest('.uiux-btn');
     if (!btn || btn.disabled) return;
-    computePositions();
     goTo(currentIndex() + Number(btn.dataset.dir));
   });
   gallery.addEventListener('keydown', e => {
-    computePositions();
     if (e.key === 'ArrowRight') { e.preventDefault(); goTo(currentIndex() + 1); }
     if (e.key === 'ArrowLeft')  { e.preventDefault(); goTo(currentIndex() - 1); }
     if (e.key === 'Home')       { e.preventDefault(); goTo(0); }
@@ -507,19 +576,20 @@ uiuxData.forEach(item => {
 
   gallery.addEventListener('pointerdown', e => {
     if (e.pointerType !== 'mouse' || e.button !== 0) return;
-    computePositions();
     down = true; dx = 0;
+    window.addEventListener('pointermove', onDragMove, { passive: true });
     startX = e.clientX; startLeft = gallery.scrollLeft; startIdx = currentIndex();
     gallery.classList.add('is-dragging');
   });
-  window.addEventListener('pointermove', e => {
+  const onDragMove = e => {
     if (!down) return;
     dx = e.clientX - startX;
     gallery.scrollLeft = startLeft - dx;
-  });
+  };
   const endDrag = () => {
     if (!down) return;
     down = false;
+    window.removeEventListener('pointermove', onDragMove);
     gallery.classList.remove('is-dragging');
     const threshold = Math.min(80, slides[0].offsetWidth * 0.12);
     let target = currentIndex();
@@ -538,10 +608,10 @@ uiuxData.forEach(item => {
    RENDER — GRAPHIC DESIGN GRID (05)
 ================================================================= */
 const gfxData = [
-  { cls:'item-1', img:'assets/images/food-redesign1.png',   alt:'Food Product Redesign',          ratio:'3/4', title:'Food Product Redesign',   tag:'Branding' },
-  { cls:'item-2', img:'assets/images/uniform-social1.png',  alt:'Uniform Product Social Content', ratio:'3/4', title:'Uniform Social Content',  tag:'Social Media' },
-  { cls:'item-3', img:'assets/images/service-listing1.png', alt:'Website Service Listing',        ratio:'1/1', title:'Service Listing',         tag:'Promo' },
-  { cls:'item-4', img:'assets/images/food-redesign2.png',   alt:'Food Product Redesign 02',       ratio:'3/4', title:'Food Redesign 02',        tag:'Branding' }
+  { cls:'item-1', img:'assets/images/food-redesign1.webp',   alt:'Food Product Redesign',          ratio:'3/4', title:'Food Product Redesign',   tag:'Branding' },
+  { cls:'item-2', img:'assets/images/uniform-social1.webp',  alt:'Uniform Product Social Content', ratio:'3/4', title:'Uniform Social Content',  tag:'Social Media' },
+  { cls:'item-3', img:'assets/images/service-listing1.webp', alt:'Website Service Listing',        ratio:'1/1', title:'Service Listing',         tag:'Promo' },
+  { cls:'item-4', img:'assets/images/food-redesign2.webp',   alt:'Food Product Redesign 02',       ratio:'3/4', title:'Food Redesign 02',        tag:'Branding' }
 ];
 const gfxGrid = document.getElementById('gfxGrid');
 gfxData.forEach((g, i) => {
@@ -566,15 +636,21 @@ let mx = 0, my = 0, cx = 0, cy = 0, lx = 0, ly = 0;
 const isFinePointer = window.matchMedia('(pointer: fine)').matches;
 
 if (isFinePointer) {
-  window.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+  let cursorRaf = 0;
   const loop = () => {
     cx += (mx - cx) * 0.2; cy += (my - cy) * 0.2;
     lx += (mx - lx) * 0.14; ly += (my - ly) * 0.14;
     cursor.style.transform = `translate(${cx}px, ${cy}px) translate(-50%,-50%)`;
     cursorLabel.style.transform = `translate(${lx}px, ${ly}px) translate(-50%,-50%)`;
-    requestAnimationFrame(loop);
+    // berhenti saat kursor sudah "sampai" — tidak ada kerja saat mouse diam
+    const settled = Math.abs(mx - cx) < 0.1 && Math.abs(my - cy) < 0.1 &&
+                    Math.abs(mx - lx) < 0.1 && Math.abs(my - ly) < 0.1;
+    cursorRaf = settled ? 0 : requestAnimationFrame(loop);
   };
-  loop();
+  window.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    if (!cursorRaf) cursorRaf = requestAnimationFrame(loop);
+  }, { passive: true });
 
   document.querySelectorAll('[data-cursor], .work-row-head, .player, .uiux-slide').forEach(el => {
     el.addEventListener('mouseenter', () => {
@@ -744,3 +820,15 @@ const pio = new IntersectionObserver((entries) => {
 }, { threshold: 0.3 });
 players.forEach(p => pio.observe(p));
 
+
+
+/* =================================================================
+   PAUSE ANIMASI DI LUAR LAYAR (hemat CPU/GPU & baterai)
+================================================================= */
+(function () {
+  if (!('IntersectionObserver' in window)) return;
+  const aio = new IntersectionObserver(entries => {
+    entries.forEach(e => e.target.classList.toggle('anim-off', !e.isIntersecting));
+  }, { rootMargin: '80px 0px' });
+  document.querySelectorAll('.hero-shapes, .motion-line, .hero-scroll-cue .bar').forEach(el => aio.observe(el));
+})();
